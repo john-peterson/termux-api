@@ -1,6 +1,11 @@
-apply plugin: 'com.android.application'
+// apply plugin: 'com.android.application'
+
+plugins {
+    id 'com.android.application'
+}
 
 android {
+    namespace "com.termux.api"
     compileSdkVersion project.properties.compileSdkVersion.toInteger()
     def appVersionName = System.getenv("TERMUX_API_APP_VERSION_NAME") ?: ""
     def apkVersionTag = System.getenv("TERMUX_API_APK_VERSION_TAG") ?: ""
@@ -68,7 +73,11 @@ dependencies {
     implementation 'androidx.biometric:biometric:1.2.0-alpha03'
     implementation 'androidx.media:media:1.4.3'
 
-    implementation 'com.termux.termux-app:termux-shared:8c1749ef96'
+    // implementation 'com.termux.termux-app:termux-shared:8c1749ef96'
+    // implementation 'com.termux.termux-app:termux-shared:b0e1dbc3da'
+    // implementation "com.termux.termux-app:termux-shared:da3a0ac4e2"
+    // implementation 'com.termux.termux-app:termux-shared:7bceab88e2'
+    implementation "com.termux.termux-app:termux-shared:8aca6dbbf4"
     // Use if below libraries are published locally by termux-app with `./gradlew publishReleasePublicationToMavenLocal` and used with `mavenLocal()`.
     // If updates are done, republish there and sync project with gradle files here
     // https://github.com/termux/termux-app/wiki/Termux-Libraries
