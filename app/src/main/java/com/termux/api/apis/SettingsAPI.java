@@ -62,6 +62,7 @@ static myWriter out;
 static ContentResolver cr;
 static String setting;
 static String type;
+static String domain;
 
 public static void onReceive(TermuxApiReceiver _receiver, final Context _context, Intent _intent) {
 	Logger.logDebug(LOG_TAG, "onReceive");
@@ -78,6 +79,7 @@ public static void onReceive(TermuxApiReceiver _receiver, final Context _context
 	cr = context.getContentResolver();
 	setting = intent.getStringExtra("setting");
 	type = intent.getStringExtra("type");
+	domain = intent.getStringExtra("domain");
 
 	Logger.logInfo(LOG_TAG, "==*==*==*==");
 	Logger.logInfo(LOG_TAG, "received " + intent.toString());
@@ -127,10 +129,37 @@ static void jsonTest() throws Exception {
 }
 */
 
+static String getString() throws Exception {
+	switch(domain) {
+		case "global":
+			return Settings.Global.getString(cr, setting);
+		case "secure":
+			return Settings.Secure.getString(cr, setting);
+		case "system":
+			return Settings.System.getString(cr, setting);
+		default:
+			return domain +" is invalid. valid global/system";
+	}
+}
+
+static boolean setString(String value) throws Exception {
+	switch(domain) {
+		case "global":
+			return Settings.Global.putString(cr, setting, value);
+		case "secure":
+			return Settings.Secure.putString(cr, setting, value);
+		case "system":
+			return Settings.System.putString(cr, setting, value);
+		default:
+			out.value("invalid domain "+domain +" did you mean global/system");
+			return false;
+	}
+}
+
 static void get() throws Exception {
 	switch(type) {
 		case "string":
-			String get = Settings.Global.getString(cr, setting);
+			String get = getString();
 			out.value(get);
 			Logger.logInfo(LOG_TAG, "received string \"" + get + "\"");
 			break;
@@ -157,7 +186,7 @@ static void set() throws Exception {
 			if (value == null)
 				value = "";
 			out.value("setting "+setting+"  to \""+value+"\"");
-			result = Settings.Global.putString(cr, setting, value);
+			result = setString(value);
 			break;
 		case "int":
 			if (value == null || value.trim().isEmpty()) {
