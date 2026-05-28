@@ -81,6 +81,9 @@ public static void onReceive(TermuxApiReceiver _receiver, final Context _context
 	type = intent.getStringExtra("type");
 	domain = intent.getStringExtra("domain");
 
+	if (type == null)
+		type = "string";
+
 	Logger.logInfo(LOG_TAG, "==*==*==*==");
 	Logger.logInfo(LOG_TAG, "received " + intent.toString());
 
@@ -185,7 +188,7 @@ static void set() throws Exception {
 				// out.value("notice setting empty value");
 			if (value == null)
 				value = "";
-			out.value("setting "+setting+"  to \""+value+"\"");
+			out.value("setting "+setting+" to \""+value+"\"");
 			result = setString(value);
 			break;
 		case "int":
