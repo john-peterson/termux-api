@@ -80,9 +80,11 @@ public class VolumeAPI {
      * Print information about all available audio streams
      */
     private static void printAllStreamInfo(Context context, Intent intent, final AudioManager audioManager) {
+        System.out.println("3");
         ResultReturner.returnData(context, intent, new ResultReturner.ResultJsonWriter() {
             @Override
             public void writeJson(JsonWriter out) throws Exception {
+                System.out.println("4");
                 getStreamsInfo(audioManager, out);
                 out.close();
             }

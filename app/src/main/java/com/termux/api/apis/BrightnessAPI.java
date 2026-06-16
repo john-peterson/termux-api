@@ -37,6 +37,7 @@ public class BrightnessAPI {
     }
 
     public static void onReceive(final TermuxApiReceiver _receiver, final Context _context, final Intent _intent) {
+        System.out.println("3");
         context = _context;
         receiver = _receiver;
         intent = _intent;
@@ -76,6 +77,7 @@ public class BrightnessAPI {
             Logger.logInfo(LOG_TAG, " set brightness "+brightness);
             pw.println("setting brightness to "+brightness);
         } else {
+            System.out.println("4");
             int b = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS);
             Logger.logInfo(LOG_TAG, "received brightness "+b);
             pw.println(""+b);

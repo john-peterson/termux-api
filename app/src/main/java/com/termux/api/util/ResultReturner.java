@@ -1,3 +1,4 @@
+
 package com.termux.api.util;
 
 import android.annotation.SuppressLint;
@@ -18,7 +19,8 @@ import androidx.annotation.NonNull;
 
 import com.termux.shared.android.PackageUtils;
 import com.termux.shared.file.FileUtils;
-import com.termux.shared.logger.Logger;
+// import com.termux.shared.logger.Logger;
+import com.termux.api.Logger;
 import com.termux.shared.termux.TermuxConstants;
 import com.termux.shared.termux.plugins.TermuxPluginUtils;
 
@@ -83,6 +85,7 @@ public abstract class ResultReturner {
          */
         public final void writeResult(PrintWriter unused) throws Exception {
             writeResult(out);
+            System.out.println("flush");
             out.flush();
         }
     }
@@ -242,13 +245,16 @@ public abstract class ResultReturner {
             PrintWriter writer = null;
             LocalSocket outputSocket = null;
             try {
+                System.out.println("try");
                 outputSocket = new LocalSocket();
                 String outputSocketAddress = intent.getStringExtra(SOCKET_OUTPUT_EXTRA);
                 if (outputSocketAddress == null || outputSocketAddress.isEmpty())
                     throw new IOException("Missing '" + SOCKET_OUTPUT_EXTRA + "' extra");
                 Logger.logDebug(LOG_TAG, "Connecting to output socket \"" + outputSocketAddress + "\"");
-                outputSocket.connect(getApiLocalSocketAddress(ResultReturner.context, "output", outputSocketAddress));
-                writer = new PrintWriter(outputSocket.getOutputStream());
+                // outputSocket.connect(getApiLocalSocketAddress(ResultReturner.context, "output", outputSocketAddress));
+                // writer = new PrintWriter(outputSocket.getOutputStream());
+                writer = new PrintWriter(System.out, true);
+                // writer = new PrintWriter(System.out);
 
                 if (resultWriter != null) {
                     if(resultWriter instanceof WithAncillaryFd) {
@@ -263,16 +269,17 @@ public abstract class ResultReturner {
                             String inputSocketAddress = intent.getStringExtra(SOCKET_INPUT_EXTRA);
                             if (inputSocketAddress == null || inputSocketAddress.isEmpty())
                                 throw new IOException("Missing '" + SOCKET_INPUT_EXTRA + "' extra");
-                            inputSocket.connect(getApiLocalSocketAddress(ResultReturner.context, "input", inputSocketAddress));
-                            ((WithInput) resultWriter).setInput(inputSocket.getInputStream());
+                            // inputSocket.connect(getApiLocalSocketAddress(ResultReturner.context, "input", inputSocketAddress));
+                            // ((WithInput) resultWriter).setInput(inputSocket.getInputStream());
+                            // ((WithInput) resultWriter).setInput(System.in);
                             resultWriter.writeResult(writer);
                         }
                     } else {
                         resultWriter.writeResult(writer);
                     }
-                    if (resultWriter instanceof WithAncillaryFd) {
-                      ((WithAncillaryFd) resultWriter).cleanupFds();
-                    }
+                    // if (resultWriter instanceof WithAncillaryFd) {
+                      // ((WithAncillaryFd) resultWriter).cleanupFds();
+                    // }
                 }
 
 
@@ -281,14 +288,16 @@ public abstract class ResultReturner {
                 } else if (activity != null) {
                     activity.setResult(0);
                 }
-            } catch (Throwable t) {
-                String message = "Error in " + LOG_TAG;
-                if (callerStackTrace != null)
-                    t.addSuppressed(callerStackTrace);
-                Logger.logStackTraceWithMessage(LOG_TAG, message, t);
 
-                TermuxPluginUtils.sendPluginCommandErrorNotification(ResultReturner.context, LOG_TAG,
-                        TermuxConstants.TERMUX_API_APP_NAME + " Error", message, t);
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            // } catch (Throwable t) {
+            //     String message = "Error in " + LOG_TAG;
+            //     if (callerStackTrace != null)
+            //         t.addSuppressed(callerStackTrace);
+            //     Logger.logStackTraceWithMessage(LOG_TAG, message, t);
+            //     TermuxPluginUtils.sendPluginCommandErrorNotification(ResultReturner.context, LOG_TAG,
+            //             TermuxConstants.TERMUX_API_APP_NAME + " Error", message, t);
 
                 if (asyncResult != null && receiver != null && receiver.isOrderedBroadcast()) {
                     asyncResult.setResultCode(1);
@@ -296,9 +305,11 @@ public abstract class ResultReturner {
                     activity.setResult(1);
                 }
             } finally {
+                System.out.println("finally");
                 try {
                     if (writer != null)
-                        writer.close();
+                        // writer.close();
+                        writer.flush();
                     if (outputSocket != null)
                         outputSocket.close();
                 } catch (Exception e) {
