@@ -54,6 +54,7 @@ public class VolumeAPI {
      * Prints error to console
      */
     private static void printError(Context context, Intent intent, final String error) {
+        System.out.println("error");
         ResultReturner.returnData(context, intent, out -> {
             out.append(error).append("\n");
             out.flush();
@@ -80,12 +81,13 @@ public class VolumeAPI {
      * Print information about all available audio streams
      */
     private static void printAllStreamInfo(Context context, Intent intent, final AudioManager audioManager) {
-        System.out.println("3");
+        System.out.println("printAllStreamInfo");
         ResultReturner.returnData(context, intent, new ResultReturner.ResultJsonWriter() {
             @Override
             public void writeJson(JsonWriter out) throws Exception {
-                System.out.println("4");
+                System.out.println("writeJson");
                 getStreamsInfo(audioManager, out);
+                System.out.println("5");
                 out.close();
             }
         });
@@ -98,6 +100,7 @@ public class VolumeAPI {
         out.beginArray();
 
         for (int j = 0; j < streamMap.size(); ++j) {
+            System.out.println("j="+j);
             int stream = streamMap.keyAt(j);
             getStreamInfo(audioManager, out, stream);
         }
@@ -111,8 +114,9 @@ public class VolumeAPI {
         out.beginObject();
 
         out.name("stream").value(streamMap.get(stream));
-        out.name("volume").value(audioManager.getStreamVolume(stream));
-        out.name("max_volume").value(audioManager.getStreamMaxVolume(stream));
+        // out.name("volume").value(audioManager.getStreamVolume(stream));
+        // out.name("max_volume").value(audioManager.getStreamMaxVolume(stream));
+        audioManager.getStreamVolume(stream);
 
         out.endObject();
     }

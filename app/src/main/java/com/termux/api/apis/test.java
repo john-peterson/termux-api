@@ -1,3 +1,4 @@
+
 package com.termux.api.apis;
 
 import android.content.ContentResolver;
@@ -23,6 +24,10 @@ static Context context;
 static TermuxApiReceiver receiver;
 static Intent intent;
 
+static void sleep(){
+		try {Thread.sleep(5000);} catch (Exception e) {}
+}
+
 static void writeIn() {
 	// ResultReturner.noteDone(receiver, intent);
 	ResultReturner.returnData(context.getApplicationContext(), intent, new ResultReturner.WithInput() {
@@ -43,6 +48,8 @@ static void writeJson() {
 			out.setIndent("	");
 			out.beginArray();
 			out.value("0");
+			// sleep();
+			// out.value("0");
 			out.endArray();
 		}
 	});
@@ -61,8 +68,8 @@ public static void onReceive(final TermuxApiReceiver _receiver, final Context _c
 	// pw.flush();
 
 	try {
-		writeIn();
-		// writeJson();
+		// writeIn();
+		writeJson();
 	} catch (Exception e) {
 		Logger.logError(LOG_TAG, e.toString());
 	}

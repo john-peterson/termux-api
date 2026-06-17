@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -167,6 +168,7 @@ public abstract class ResultReturner {
     public static abstract class ResultJsonWriter implements ResultWriter {
         @Override
         public final void writeResult(PrintWriter out) throws Exception {
+            System.out.println("writeResult");
             JsonWriter writer = new JsonWriter(out);
             writer.setIndent("  ");
             writeJson(writer);
@@ -243,6 +245,7 @@ public abstract class ResultReturner {
 
         final Runnable runnable = () -> {
             PrintWriter writer = null;
+            StringWriter sw = new StringWriter();
             LocalSocket outputSocket = null;
             try {
                 System.out.println("try");
@@ -253,8 +256,9 @@ public abstract class ResultReturner {
                 Logger.logDebug(LOG_TAG, "Connecting to output socket \"" + outputSocketAddress + "\"");
                 // outputSocket.connect(getApiLocalSocketAddress(ResultReturner.context, "output", outputSocketAddress));
                 // writer = new PrintWriter(outputSocket.getOutputStream());
-                writer = new PrintWriter(System.out, true);
+                // writer = new PrintWriter(System.out, true);
                 // writer = new PrintWriter(System.out);
+                writer = new PrintWriter(sw);
 
                 if (resultWriter != null) {
                     if(resultWriter instanceof WithAncillaryFd) {
@@ -307,9 +311,11 @@ public abstract class ResultReturner {
             } finally {
                 System.out.println("finally");
                 try {
+                    // System.out.println("flush");
+                    System.out.println(sw);
                     if (writer != null)
-                        // writer.close();
-                        writer.flush();
+                        writer.close();
+                        // writer.flush();
                     if (outputSocket != null)
                         outputSocket.close();
                 } catch (Exception e) {
@@ -318,6 +324,7 @@ public abstract class ResultReturner {
 
                 try {
                     if (asyncResult != null) {
+                        System.out.println("async");
                         asyncResult.finish();
                     } else if (activity != null) {
                         activity.finish();
